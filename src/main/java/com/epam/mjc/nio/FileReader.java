@@ -2,6 +2,7 @@ package com.epam.mjc.nio;
 
 import java.io.File;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -30,13 +31,12 @@ public class FileReader {
                     buffer.clear(); // do something with the data and clear/compact it.
                 }
             String content = sb.toString();
-                System.out.println(content);
             Map<String, String> map = new HashMap<>();
             String[] arr= content.split("\n");
-            for (int i = 0; i < arr.length-1; i++) {
-                String[] arr1= arr[i].split(": ");
-                map.put(arr1[0],arr1[1]);
-            }
+                for (String s : arr) {
+                    String[] arr1 = s.split(": ");
+                    map.put(arr1[0], arr1[1]);
+                }
             Profile profile=new Profile();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 if(Objects.equals(entry.getKey(), "Name"))
@@ -48,13 +48,15 @@ public class FileReader {
                 if(Objects.equals(entry.getKey(), "Email"))
                     profile.setEmail(entry.getValue());
                 if(Objects.equals(entry.getKey(), "Phone")) {
-                    Long phone=Long.parseLong(entry.getValue());
+                    long phone=Long.parseLong(entry.getValue());
                     profile.setPhone(phone);
                 }
             }
             return profile;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
     }
 }
