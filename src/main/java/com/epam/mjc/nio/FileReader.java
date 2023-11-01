@@ -12,19 +12,25 @@ import java.util.Objects;
 
 
 public class FileReader {
-
+    public static void main(String[] args) {
+        FileReader fileReader=new FileReader();
+        File file= new File("C:\\Users\\Antonio\\Downloads\\file.txt");
+        fileReader.getDataFromFile(file);
+    }
     public Profile getDataFromFile(File file) {
-        try(RandomAccessFile aFile = new RandomAccessFile(file, "r");
-            FileChannel inChannel = aFile.getChannel()) {
-            byte[] buffer = new byte[10];
-            StringBuilder sb = new StringBuilder();
-            while (inChannel.read(ByteBuffer.wrap(buffer)) != -1) {
-                sb.append(new String(buffer));
-                buffer = new byte[10];
-            }
-            /*fileInputStream.close();*/
+            try (RandomAccessFile aFile = new RandomAccessFile(file, "r");
+                 FileChannel inChannel = aFile.getChannel()) {
+                ByteBuffer buffer = ByteBuffer.allocate(1024);
+                StringBuilder sb = new StringBuilder();
+                while (inChannel.read(buffer) > 0) {
+                    buffer.flip();
+                    for (int i = 0; i < buffer.limit(); i++) {
+                        sb.append( (char)buffer.get());
+                    }
+                    buffer.clear(); // do something with the data and clear/compact it.
+                }
             String content = sb.toString();
-            System.out.println(content);
+                System.out.println(content);
             Map<String, String> map = new HashMap<>();
             String[] arr= content.split("\n");
             for (int i = 0; i < arr.length-1; i++) {
